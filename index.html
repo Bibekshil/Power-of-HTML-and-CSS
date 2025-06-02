@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Fast Foods</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+           * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background-color: #fff9f2;
+        }
+        
+       
+        .main-header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .main-nav {
+            background: linear-gradient(90deg, 
+                #ff0000, #ff7f00, #ffff00, #00ff00,
+                #00ffff, #0000ff, #4b0082, #9400d3, #ff1493);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .nav-list {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin: 0 1rem;
+            position: relative;
+        }
+        
+        .nav-item a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item a:hover {
+            text-shadow: 0 0 10px white;
+        }
+        
+        .nav-item a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item a:hover::after {
+            width: 100%;
+        }
+        
+        .order-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .order-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .hamburger {
+            display: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+       
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            margin-top: 70px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+        
+        .hero-content {
+            max-width: 600px;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .cta-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .cta-btn:hover {
+            background: #ff6b81;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        
+        .floating-foods {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .food-item {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+        
+       
+        .menu-section {
+            padding: 5rem 10%;
+            text-align: center;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            color: #333;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 4px;
+            bottom: -10px;
+            left: 25%;
+            background: linear-gradient(90deg, #ff4757, #ff7f00);
+            border-radius: 2px;
+        }
+        
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .food-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        
+        .food-card.animate {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .food-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .food-card:hover .food-img {
+            transform: scale(1.05);
+        }
+        
+        .food-info {
+            padding: 1.5rem;
+        }
+        
+        .food-name {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .food-desc {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .food-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ff4757;
+        }
+        
+        .add-to-cart {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            background: #ff4757;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-weight: 500;
+        }
+        
+        .add-to-cart:hover {
+            background: #ff6b81;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255,71,87,0.3);
+        }
+        
+       
+        .about-section {
+            padding: 5rem 10%;
+            background: linear-gradient(135deg, #fff9f2, #ffe8d6);
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+        
+        .about-img {
+            flex: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transform: translateX(-50px);
+            opacity: 0;
+        }
+        
+        .about-img.animate {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .about-img img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .about-content {
+            flex: 1;
+            transform: translateX(50px);
+            opacity: 0;
+        }
+        
+        .about-content.animate {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .about-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .about-content p {
+            color: #555;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+        
+        .features {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .feature i {
+            font-size: 2rem;
+            color: #ff4757;
+            margin-bottom: 1rem;
+        }
+        
+        .feature h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        
+        footer {
+            background: #333;
+            color: white;
+            padding: 4rem 10% 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #ff4757;
+        }
+        
+        .footer-column p, .footer-column a {
+            color: #ddd;
+            margin-bottom: 0.8rem;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column a:hover {
+            color: #ff4757;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: #ff4757;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #555;
+            color: #aaa;
+        }
+        
+      
+        @media (max-width: 992px) {
+            .about-section {
+                flex-direction: column;
+            }
+            
+            .about-img, .about-content {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-list {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: rgba(0,0,0,0.9);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: left 0.5s ease;
+                z-index: 999;
+            }
+            
+            .nav-list.active {
+                left: 0;
+            }
+            
+            .nav-item {
+                margin: 1.5rem 0;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .features {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero {
+                padding: 0 5%;
+                text-align: center;
+            }
+            
+            .menu-section, .about-section {
+                padding: 3rem 5%;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+        }
+ 
+    </style>
+</head>
+<body>
+    <!-- Rainbow Header -->
+    <header class="main-header">
+        <nav class="main-nav">
+            <div class="logo">FastFood</div>
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#home">Home</a></li>
+                <li class="nav-item"><a href="#menu">Menu</a></li>
+                <li class="nav-item"><a href="#about">About</a></li>
+                <li class="nav-item"><button class="order-btn">Order Now</button></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Delicious Fast Food Made With Love</h1>
+            <p>Discover our mouth-watering selection of burgers, tacos, milkshakes and more!</p>
+            <button class="cta-btn">View Menu</button>
+        </div>
+        
+        <!-- Floating Food Animation -->
+        <div class="floating-foods" id="floatingFoods"></div>
+    </section>
+    
+    <!-- Menu Section -->
+    <section id="menu" class="menu-section">
+        <h2 class="section-title">Our Popular Items</h2>
+        <div class="food-grid">
+            <div class="food-card">
+                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd" alt="Hamburger" class="food-img">
+                <div class="food-info">
+                    <h3 class="food-name">Classic Hamburger</h3>
+                    <p class="food-desc">Juicy beef patty with fresh veggies</p>
+                    <span class="food-price">$5.99</span>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="food-card">
+                <img src="https://images.unsplash.com/photo-1561758033-7e924f619b47" alt="Cheeseburger" class="food-img">
+                <div class="food-info">
+                    <h3 class="food-name">Cheeseburger</h3>
+                    <p class="food-desc">Our classic with melted cheese</p>
+                    <span class="food-price">$6.49</span>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="food-card">
+                <img src="https://images.unsplash.com/photo-1514517220017-8ce97a34a7b6" alt="Sandwich" class="food-img">
+                <div class="food-info">
+                    <h3 class="food-name">Club Sandwich</h3>
+                    <p class="food-desc">Triple decker with turkey and bacon</p>
+                    <span class="food-price">$7.99</span>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="food-card">
+                <img src="https://images.unsplash.com/photo-1505576399279-565b52d4ac71" alt="Milkshake" class="food-img">
+                <div class="food-info">
+                    <h3 class="food-name">Chocolate Milkshake</h3>
+                    <p class="food-desc">Creamy and rich chocolate flavor</p>
+                    <span class="food-price">$4.99</span>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="food-card">
+                <img src="https://images.unsplash.com/photo-1550583724-b2692b85b150" alt="Muffin" class="food-img">
+                <div class="food-info">
+                    <h3 class="food-name">Blueberry Muffin</h3>
+                    <p class="food-desc">Freshly baked with juicy blueberries</p>
+                    <span class="food-price">$3.49</span>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="food-card">
+                <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb" alt="Burrito" class="food-img">
+                <div class="food-info">
+                    <h3 class="food-name">Beef Burrito</h3>
+                    <p class="food-desc">Spicy beef wrapped in soft tortilla</p>
+                    <span class="food-price">$8.99</span>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            <div class="food-card">
+                <img src="https://images.unsplash.com/photo-1504544750208-dc0358e63f7f" alt="Taco" class="food-img">
+                <div class="food-info">
+                    <h3 class="food-name">Crispy Tacos</h3>
+                    <p class="food-desc">Two crunchy tacos with your choice of filling</p>
+                    <span class="food-price">$7.49</span>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+            
+            
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="about-img">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947" alt="Chef preparing food">
+        </div>
+        <div class="about-content">
+            <h2>About Our Food</h2>
+            <p>We take pride in serving the highest quality fast food made with fresh, locally-sourced ingredients. Our recipes have been perfected over 20 years to deliver maximum flavor in every bite.</p>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-leaf"></i>
+                    <h3>Fresh Ingredients</h3>
+                    <p>We use only the freshest produce and meats</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Fast Service</h3>
+                    <p>Your food is prepared quickly without sacrificing quality</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-heart"></i>
+                    <h3>Made with Love</h3>
+                    <p>Every dish is prepared with care and attention</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Location</h3>
+                <p>123 Food Street<br>New York, NY 10001</p>
+            </div>
+            <div class="footer-column">
+                <h3>Hours</h3>
+                <p>Monday-Friday: 10am-10pm<br>Saturday-Sunday: 11am-11pm</p>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <p>Phone: (555) 123-4567<br>Email: info@fastfood.com</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 FastFood. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Mobile Menu Toggle
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('.nav-list').classList.toggle('active');
+        });
+        
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-item a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-list').classList.remove('active');
+            });
+        });
+        
+        // Floating Food Animation
+        const foodImages = [
+            'url(https://images.unsplash.com/photo-1568901346375-23c9450c58cd)', // burger
+            'url(https://images.unsplash.com/photo-1561758033-7e924f619b47)', // cheeseburger
+            'url(https://images.unsplash.com/photo-1514517220017-8ce97a34a7b6)', // sandwich
+            'url(https://images.unsplash.com/photo-1505576399279-565b52d4ac71)', // milkshake
+            'url(https://images.unsplash.com/photo-1550583724-b2692b85b150)', // muffin
+            'url(https://images.unsplash.com/photo-1563805042-7684c019e1cb)', // burrito
+            'url(https://images.unsplash.com/photo-1504544750208-dc0358e63f7f)', // taco
+            'url(https://images.unsplash.com/photo-1615870236513-9a9ca6ca40e4)'  // hot dog
+        ];
+        
+        const floatingFoods = document.getElementById('floatingFoods');
+        
+        // Create floating food items
+        for (let i = 0; i < 15; i++) {
+            const food = document.createElement('div');
+            food.className = 'food-item';
+            food.style.backgroundImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+            food.style.left = Math.random() * 100 + 'vw';
+            food.style.top = Math.random() * 100 + 'vh';
+            floatingFoods.appendChild(food);
+            
+            // Animate each food item
+            anime({
+                targets: food,
+                translateX: () => anime.random(-100, 100),
+                translateY: () => anime.random(-100, 100),
+                rotate: () => anime.random(-180, 180),
+                duration: () => anime.random(10000, 20000),
+                easing: 'linear',
+                loop: true,
+                direction: 'alternate'
+            });
+        }
+        
+        // Hero text animation
+        anime.timeline({
+            easing: 'easeOutExpo',
+            duration: 1000
+        })
+        .add({
+            targets: '.hero h1',
+            opacity: [0, 1],
+            translateY: [50, 0]
+        })
+        .add({
+            targets: '.hero p',
+            opacity: [0, 1],
+            translateY: [30, 0]
+        }, '-=800')
+        .add({
+            targets: '.cta-btn',
+            opacity: [0, 1],
+            translateY: [20, 0]
+        }, '-=800');
+        
+        // Scroll animations
+        function animateOnScroll() {
+            const foodCards = document.querySelectorAll('.food-card');
+            const aboutImg = document.querySelector('.about-img');
+            const aboutContent = document.querySelector('.about-content');
+            
+            foodCards.forEach((card, index) => {
+                if (isInViewport(card)) {
+                    setTimeout(() => {
+                        card.classList.add('animate');
+                    }, index * 100);
+                }
+            });
+            
+            if (isInViewport(aboutImg)) {
+                aboutImg.classList.add('animate');
+                aboutContent.classList.add('animate');
+            }
+        }
+        
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.bottom >= 0
+            );
+        }
+        
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+        
+        // Button hover animations
+        document.querySelectorAll('.add-to-cart, .cta-btn, .order-btn').forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                anime({
+                    targets: button,
+                    scale: 1.05,
+                    duration: 300,
+                    easing: 'easeOutExpo'
+                });
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                anime({
+                    targets: button,
+                    scale: 1,
+                    duration: 300,
+                    easing: 'easeOutExpo'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
